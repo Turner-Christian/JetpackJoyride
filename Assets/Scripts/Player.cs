@@ -14,22 +14,15 @@ public class Player : MonoBehaviour
     Vector2 rocketJumpForce; // Force applied for rocket jump
 
     private void Start() {
-        particles = GetComponentInChildren<ParticleSystem>(); // Get the ParticleSystem component attached to the player
+        particles = GetComponent<ParticleSystem>(); // Get the ParticleSystem component attached to the player
         rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody component attached to the player
         animator = GetComponent<Animator>(); // Get the Animator component attached to the player
         rocketJumpForce = new Vector2(0, jumpForce*2);
-        particles.gameObject.SetActive(false); // Deactivate the particle effect at the start
-
-        if (animator == null) {
-            Debug.LogError("Animator component not found on the player object.");
-        }
-        if (rb == null) {
-            Debug.LogError("Rigidbody component not found on the player object.");
-        }
     }
 
     private void Update() {
         horizontalInput = Input.GetAxis("Horizontal"); // Get horizontal input (A/D or Left/Right arrow keys)
+        RocketBurst(); // Call the RocketBurst method to check for rocket burst input
 
         if (rb.linearVelocity.y < 0) { // Check if the player is falling
             rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallForce - 1) * Time.deltaTime; // Apply fall force to the player
@@ -40,9 +33,6 @@ public class Player : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Space)) { // Check if the space key is pressed for rocket jump
             RocketJump(); // Call the RocketJump method
-            particles.gameObject.SetActive(true); // Play the particle effect
-        }else {
-            particles.gameObject.SetActive(false); // Stop the particle effect if space key is not pressed
         }
 
         if (horizontalInput != 0) {
@@ -57,6 +47,23 @@ public class Player : MonoBehaviour
 
     private void RocketJump() {
         rb.AddForce(rocketJumpForce); // Apply rocket jump force to the player
+    }
+
+    private void RocketBurst() {
+        if(Input.GetKey(KeyCode.Space)) 
+        {
+            if (!particles.isPlaying) // Check if the particle system is not already playing
+            {
+                particles.Play(); // Play the particle system for visual effect
+            }
+        }
+        else
+        {
+            if (particles.isPlaying) // Check if the particle system is playing
+            {
+                particles.Stop(); // Stop the particle system
+            }
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D other) {
