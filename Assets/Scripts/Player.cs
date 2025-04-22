@@ -21,7 +21,6 @@ public class Player : MonoBehaviour
     }
 
     private void Update() {
-        horizontalInput = Input.GetAxis("Horizontal"); // Get horizontal input (A/D or Left/Right arrow keys)
         RocketBurst(); // Call the RocketBurst method to check for rocket burst input
 
         if (rb.linearVelocity.y < 0) { // Check if the player is falling
@@ -33,15 +32,6 @@ public class Player : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Space)) { // Check if the space key is pressed for rocket jump
             RocketJump(); // Call the RocketJump method
-        }
-
-        if (horizontalInput != 0) {
-            rb.linearVelocity = new Vector2(horizontalInput * speed, rb.linearVelocity.y); // Move the player horizontally
-            // animator.SetBool("IsRunning", true); // Set the animator parameter to indicate running
-        }
-        else {
-            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y); // Stop horizontal movement if no input
-            // animator.SetBool("IsRunning", false); // Set the animator parameter to indicate movement
         }
     }
 
@@ -69,14 +59,16 @@ public class Player : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other) {
         if (other.gameObject.CompareTag("Ground")) {
             animator.SetBool("IsRunning", true); // Set the animator parameter to indicate not jumping
-            animator.SetBool("IsJumping", false); // Set the animator parameter to indicate not jumping
+        }
+         if (other.gameObject.CompareTag("Enemy"))
+        {
+            Destroy(gameObject);
         }
     }
 
     private void OnCollisionExit2D(Collision2D other) {
         if (other.gameObject.CompareTag("Ground")) {
             animator.SetBool("IsRunning", false); // Set the animator parameter to indicate not jumping
-            animator.SetBool("IsJumping", true); // Set the animator parameter to indicate jumping
         }
     }
 }
