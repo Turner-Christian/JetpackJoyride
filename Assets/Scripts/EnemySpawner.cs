@@ -39,6 +39,6 @@ public class GameManager : MonoBehaviour
 
     private void SetRandomYPos()
     {
-        randPosY = Random.Range(-1, 4);
+        randPosY = Random.Range(-2, 4);
     }
 }

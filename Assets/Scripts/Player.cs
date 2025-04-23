@@ -2,73 +2,72 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public ParticleSystem particles; // Reference to the ParticleSystem for visual effects
-    public Animator animator; // Reference to the Animator component for animations
-    public float speed = 5f; // Speed of the player movement
-    public float jumpForce = 1f; // Jump force applied to the player
-    public float smallJumpForce = 2f; // Small jump force applied to the player
-    public float fallForce = 3.5f; // Fall force applied to the player
+    public ParticleSystem particles;
+    public Animator animator;
+    public float speed = 5f;
+    public float rocketThrust = 15f; // Upward force while holding space
+    public float smallJumpForce = 2f;
+    public float fallForce = 3.5f;
 
-    private float horizontalInput; // Horizontal input value
-    private Rigidbody2D rb; // Reference to the Rigidbody2D component
-    Vector2 rocketJumpForce; // Force applied for rocket jump
+    private float horizontalInput;
+    private bool isRocketThrusting;
+
+    private Rigidbody2D rb;
 
     private void Start() {
-        particles = GetComponent<ParticleSystem>(); // Get the ParticleSystem component attached to the player
-        rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody component attached to the player
-        animator = GetComponent<Animator>(); // Get the Animator component attached to the player
-        rocketJumpForce = new Vector2(0, jumpForce*2);
+        particles = GetComponent<ParticleSystem>();
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     private void Update() {
-        RocketBurst(); // Call the RocketBurst method to check for rocket burst input
+        horizontalInput = Input.GetAxis("Horizontal");
 
-        if (rb.linearVelocity.y < 0) { // Check if the player is falling
-            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallForce - 1) * Time.deltaTime; // Apply fall force to the player
-        } else if (rb.linearVelocity.y > 0 && !Input.GetButton("Jump")) {
-            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (smallJumpForce - 1) * Time.deltaTime;
-        }
+        // Check if Space is held
+        isRocketThrusting = Input.GetKey(KeyCode.Space);
 
-
-        if (Input.GetKey(KeyCode.Space)) { // Check if the space key is pressed for rocket jump
-            RocketJump(); // Call the RocketJump method
-        }
+        RocketBurst(); // Control visual effect
     }
 
-    private void RocketJump() {
-        rb.AddForce(rocketJumpForce); // Apply rocket jump force to the player
+    private void FixedUpdate() {
+        // Horizontal movement
+        rb.linearVelocity = new Vector2(horizontalInput * speed, rb.linearVelocity.y);
+
+        // Apply upward rocket force while holding Space
+        if (isRocketThrusting) {
+            rb.AddForce(Vector2.up * rocketThrust);
+        }
+
+        // Apply better gravity fall behavior
+        if (rb.linearVelocity.y < 0 ) {
+            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallForce - 1) * Time.fixedDeltaTime;
+        } else if (rb.linearVelocity.y > 0 && !Input.GetButton("Jump")) {
+            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallForce - 1) * Time.fixedDeltaTime;
+        }
     }
 
     private void RocketBurst() {
-        if(Input.GetKey(KeyCode.Space)) 
-        {
-            if (!particles.isPlaying) // Check if the particle system is not already playing
-            {
-                particles.Play(); // Play the particle system for visual effect
+        // Show or hide thruster particles
+        if (isRocketThrusting) {
+            if (!particles.isPlaying) {
+                particles.Play();
             }
-        }
-        else
-        {
-            if (particles.isPlaying) // Check if the particle system is playing
-            {
-                particles.Stop(); // Stop the particle system
+        } else {
+            if (particles.isPlaying) {
+                particles.Stop();
             }
         }
     }
 
     private void OnCollisionEnter2D(Collision2D other) {
         if (other.gameObject.CompareTag("Ground")) {
-            animator.SetBool("IsRunning", true); // Set the animator parameter to indicate not jumping
-        }
-         if (other.gameObject.CompareTag("Enemy"))
-        {
-            Destroy(gameObject);
+            animator.SetBool("IsRunning", true);
         }
     }
 
     private void OnCollisionExit2D(Collision2D other) {
         if (other.gameObject.CompareTag("Ground")) {
-            animator.SetBool("IsRunning", false); // Set the animator parameter to indicate not jumping
+            animator.SetBool("IsRunning", false);
         }
     }
 }

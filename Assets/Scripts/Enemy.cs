@@ -8,12 +8,16 @@ public class Enemy : MonoBehaviour
     private float minSpeed;
     [SerializeField]
     private float maxSpeed;
+    [SerializeField]
+    private GameObject explosionPrefab; // Reference to the explosion prefab
+    private Shake cameraShake; // Reference to the camera shake script
     private float randSpeed;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         RandomSpeed();
+        cameraShake = Camera.main.GetComponent<Shake>();
     }
 
     void Update()
@@ -30,6 +34,15 @@ public class Enemy : MonoBehaviour
     {
         if(other.gameObject.CompareTag("BorderLeft"))
         {
+            Destroy(gameObject); // Destroy the enemy object when it collides with the left border
+        }
+        if(other.gameObject.CompareTag("Player"))
+        {
+            if (cameraShake != null){
+                cameraShake.start = true;
+            }
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity); // Instantiate explosion prefab at the enemy's position
+            Destroy(other.gameObject); // Destroy the player object
             Destroy(gameObject);
         }
     }
