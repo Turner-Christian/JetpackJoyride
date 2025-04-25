@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro; // Import TextMeshPro namespace
+using System; // Import System namespace for Math.Round
 
 public class Score : MonoBehaviour
 {
@@ -13,8 +14,16 @@ public class Score : MonoBehaviour
     }
 
     void Update()
-    {
-        timeAlive += Time.deltaTime; // Increment timeAlive by the time since the last frame
-        scoreText.text = "Score: " + Mathf.FloorToInt(timeAlive); // Update the score text with the time alive
+    {   
+        if(GmeManager.PlayerIsDead) // Check if the player is dead
+        {
+            return; // Exit the Update method if the player is dead
+        }
+        else
+        {
+            timeAlive += Time.deltaTime; // Increment timeAlive by the time since the last frame
+            scoreText.text = "SCORE " + (Math.Round(timeAlive, 2) * 10).ToString("F0"); // Update the score text with the time alive
+            GmeManager.score = (Math.Round(timeAlive, 2) * 10).ToString("F0");  // Update the score in the GameManager
+        }
     }
 }

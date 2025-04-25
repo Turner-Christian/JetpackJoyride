@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour
     private float maxSpeed;
     [SerializeField]
     private GameObject explosionPrefab; // Reference to the explosion prefab
+    [SerializeField]
     private Shake cameraShake; // Reference to the camera shake script
     private float randSpeed;
 
@@ -44,6 +45,7 @@ public class Enemy : MonoBehaviour
             Instantiate(explosionPrefab, transform.position, Quaternion.identity); // Instantiate explosion prefab at the enemy's position
             Destroy(other.gameObject); // Destroy the player object
             Destroy(gameObject);
+            GmeManager.PlayerIsDead = true; // Set the player dead flag to true
         }
     }
 }

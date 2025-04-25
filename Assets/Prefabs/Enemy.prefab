@@ -54,6 +54,7 @@ MonoBehaviour:
   minSpeed: -6
   maxSpeed: -10
   explosionPrefab: {fileID: 4914483535004256156, guid: 19c8f4df8c9e63d45bb280548bda6b73, type: 3}
+  cameraShake: {fileID: 0}
 --- !u!61 &4535198247211149006
 BoxCollider2D:
   m_ObjectHideFlags: 0
