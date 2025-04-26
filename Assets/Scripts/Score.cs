@@ -11,19 +11,21 @@ public class Score : MonoBehaviour
     void Awake()
     {
         timeAlive = 0; // Initialize timeAlive to 0
+        scoreText.gameObject.SetActive(true); // Hide the score text if the player is dead
     }
 
     void Update()
     {   
         if(GmeManager.PlayerIsDead) // Check if the player is dead
         {
+            scoreText.gameObject.SetActive(false); // Hide the score text if the player is dead
             return; // Exit the Update method if the player is dead
         }
         else
         {
             timeAlive += Time.deltaTime; // Increment timeAlive by the time since the last frame
             scoreText.text = "SCORE " + (Math.Round(timeAlive, 2) * 10).ToString("F0"); // Update the score text with the time alive
-            GmeManager.score = (Math.Round(timeAlive, 2) * 10).ToString("F0");  // Update the score in the GameManager
+            GmeManager.score = Convert.ToInt32(Math.Round(timeAlive, 2) * 10);  // Update the score in the GameManager
         }
     }
 }

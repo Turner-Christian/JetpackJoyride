@@ -8,7 +8,9 @@ public class Player : MonoBehaviour
     public float rocketThrust = 15f; // Upward force while holding space
     public float smallJumpForce = 2f;
     public float fallForce = 3.5f;
+    public AudioSource jumpSound; // Reference to the jump sound effect
 
+    private bool isJumping = false; // Flag to check if the player is jumping
     private float horizontalInput;
     private bool isRocketThrusting;
 
@@ -21,6 +23,17 @@ public class Player : MonoBehaviour
     }
 
     private void Update() {
+        if(isJumping)
+        {
+            if (!jumpSound.isPlaying) // Check if the jump sound is not already playing
+            {
+                jumpSound.Play(); // Play the jump sound
+            }
+        }
+        else
+        {
+            jumpSound.Stop(); // Stop the jump sound if not jumping
+        }
         horizontalInput = Input.GetAxis("Horizontal");
 
         // Check if Space is held
@@ -36,6 +49,9 @@ public class Player : MonoBehaviour
         // Apply upward rocket force while holding Space
         if (isRocketThrusting) {
             rb.AddForce(Vector2.up * rocketThrust);
+            isJumping = true; // Set jumping flag to true
+        } else {
+            isJumping = false; // Set jumping flag to false
         }
 
         // Apply better gravity fall behavior

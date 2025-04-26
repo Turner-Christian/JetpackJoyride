@@ -45,7 +45,7 @@ public class Enemy : MonoBehaviour
             Instantiate(explosionPrefab, transform.position, Quaternion.identity); // Instantiate explosion prefab at the enemy's position
             Destroy(other.gameObject); // Destroy the player object
             Destroy(gameObject);
-            GmeManager.PlayerIsDead = true; // Set the player dead flag to true
+            // GmeManager.PlayerIsDead = true; // Set the player dead flag to true
         }
     }
 }
